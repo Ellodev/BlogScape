@@ -6,10 +6,9 @@ require_once 'templates/database.php';
 <h1>posts</h1>
 
 <?php
-$db = new database();
-$pdo = $db->getConnection();
+$db = connectToDatabase();
 
-$posts = $pdo->query('SELECT * FROM posts')->fetchAll();
+$posts = $db->query('SELECT * FROM posts')->fetchAll();
 
 foreach ($posts as $post) {
     echo "<h2>{$post['Title']}</h2>";

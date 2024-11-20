@@ -33,3 +33,12 @@ function sanitizeInput($input) {
     $input = trim($input);
     return htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
 }
+
+function validateURL($url) {
+    sanitizeInput($url);
+    if ($url === false) {
+        return false;
+    } else {
+        return filter_var($url, FILTER_VALIDATE_URL);
+    }
+}

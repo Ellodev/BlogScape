@@ -44,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $error = "No user found with that email.";
         }
 
-        $stmt->close();
     }
 }
 ?>

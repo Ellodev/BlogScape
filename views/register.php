@@ -62,8 +62,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 <body>
 
-<h2>Register</h2>
-
 <?php
 if (isset($error)) {
     echo "<p style='color:red;'>" . htmlspecialchars($error) . "</p>";

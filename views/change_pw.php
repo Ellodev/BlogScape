@@ -13,7 +13,6 @@ if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-
 require('templates/database.php');
 $db = connectToDatabase();
 
@@ -28,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     $stmt = $db->prepare("SELECT * FROM users WHERE username = :username");
-    $stmt -> execute(['username' => $username]);
+    $stmt->execute(['username' => $username]);
 
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -36,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($new_password !== $confirm_password) {
             $error = "Passwords do not match!";
         } elseif (validatePassword($new_password) === false) {
-            $error = "Password must be at least 8 characters long, contain a uppercase and lowercase letter and a special character!";
+            $error = "Password must be at least 8 characters long, contain a uppercase and lowercase letter, and a special character!";
         } else {
             $hashed_password = password_hash($new_password, PASSWORD_ARGON2ID);
 
@@ -49,7 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         $error = "Invalid password.";
     }
-
 }
 ?>
 
@@ -58,11 +56,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <title>Change Password</title>
 </head>
 <body>
 
-<h1 class="is-size-1">Change Password</h1>
+<h2 class="has-text-centered is-size-2">Change Password</h2>
 
 <?php
 if (isset($error)) {
@@ -70,31 +68,34 @@ if (isset($error)) {
 }
 ?>
 
-<form method="POST" action="">
-    <div class="field">
-        <label for="old_password" class="label">Old Password</label>
-        <div class="control">
-            <input type="password" name="old_password" id="old_password" class="input" required>
+<div class="block is-flex is-justify-content-center is-align-items-center">
+    <form method="POST" action="" style="min-width:400px">
+        <div class="field">
+            <label for="old_password" class="label">Old Password</label>
+            <div class="control">
+                <input type="password" name="old_password" id="old_password" class="input" required>
+            </div>
         </div>
-    </div>
-    <div class="field">
-        <label for="new_password" class="label">New Password</label>
-        <div class="control">
-            <input type="password" name="new_password" id="new_password" class="input" required>
+        <div class="field">
+            <label for="new_password" class="label">New Password</label>
+            <div class="control">
+                <input type="password" name="new_password" id="new_password" class="input" required>
+            </div>
         </div>
-    </div>
-    <div class="field">
-        <label for="confirm_password" class="label">Confirm Password</label>
-        <div class="control">
-            <input type="password" name="confirm_password" id="confirm_password" class="input" required>
+        <div class="field">
+            <label for="confirm_password" class="label">Confirm Password</label>
+            <div class="control">
+                <input type="password" name="confirm_password" id="confirm_password" class="input" required>
+            </div>
         </div>
-    </div>
-    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-    <div class="field">
-        <div class="control">
-            <button class="button is-primary" type="submit">Submit</button>
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+        <div class="field">
+            <div class="control">
+                <button class="button is-primary" type="submit">Submit</button>
+            </div>
         </div>
-    </div>
-</form>
+    </form>
+</div>
+
 </body>
 </html>

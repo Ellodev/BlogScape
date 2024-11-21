@@ -26,6 +26,12 @@ switch ($page) {
     case 'change_pw':
         require $viewDir . '/change_pw.php';
         break;
+    case 'other-blogs':
+        require $viewDir . '/other-blogs.php';
+        break;
+    case 'profile':
+        require $viewDir . '/profile.php';
+        break;
     default:
         http_response_code(404);
         require $viewDir . '/404_view.php';

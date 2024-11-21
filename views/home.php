@@ -35,9 +35,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 ?>
 
-<h1 class="is-size-1 has-text-centered">Posts</h1>
+<h2 class="is-size-2 has-text-centered title">posts</h2>
 
-<div class="is-flex is-justify-content-center is-flex-direction-column is-align-items-center">
+<div class="is-flex is-justify-content-center is-flex-direction-column is-flex-wrap is-align-items-center">
     <?php
     $db = connectToDatabase();
 
@@ -53,7 +53,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     foreach ($posts as $post) {
         $post_id = $post['post_id'];
 
-        $likesCount = $db->query("SELECT COUNT(*) FROM likes WHERE post_id = {$post_id}")->fetchColumn();
+        $stmt = $db->prepare("SELECT COUNT(*) FROM likes WHERE post_id = :post_id");
+        $stmt->execute([':post_id' => $post_id]);
+        $likesCount = $stmt->fetchColumn();
         $userLiked = false;
         if (isset($_SESSION['user_id'])) {
             $stmt = $db->prepare("SELECT * FROM likes WHERE post_id = :post_id AND user_id = :user_id");
@@ -79,37 +81,60 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->execute([':post_id' => $post_id]);
         $comments = $stmt->fetchAll();
         ?>
-        <div class="box" style="max-width: 800px; width: 100%; margin-bottom: 20px;">
-            <h3 class="is-size-3"><?= htmlspecialchars($post['title']) ?></h3>
-            <p class=""><small>By <?= htmlspecialchars($post['username']) ?> on <?= $post['created_at'] ?></small></p>
-            <img src="<?= htmlspecialchars($post['image']) ?>" alt="Post Image" style="max-height: 300px; width: 100%; object-fit: cover;">
-            <p class="mt-2"><?= nl2br(htmlspecialchars($post['content'])) ?></p>
+        <div class="card" style="max-width: 800px; margin: 0 auto 20px;">
+            <div class="card-image">
+                <figure class="image is-16by9">
+                    <img
+                            src="<?= htmlspecialchars($post['image']) ?>"
+                            alt="Post Image"
+                            class="post-image"
+                            onerror="this.style.display='none'; this.closest('.card-image').style.display='none';"
+                    >
+                </figure>
+            </div>
 
-            <div class="columns is-flex is-justify-content-center is-align-items-center">
-                <form method="POST" action="" class="mt-2 field column is-narrow">
-                    <input type="hidden" name="post_id" value="<?= $post_id ?>">
-                    <button type="submit" name="like" <?= ($userLiked || !isset($_SESSION['loggedin']) ||$ownUserPost) ? 'disabled' : '' ?> class="button is-light">
+            <div class="card-content">
+                <h3 class="title is-3"><?= htmlspecialchars($post['title']) ?></h3>
+                <p class="subtitle is-6 has-text-grey-light">
+                    By <?= htmlspecialchars($post['username']) ?> on <?= $post['created_at'] ?>
+                </p>
+
+                <div class="content">
+                    <?= nl2br(htmlspecialchars($post['content'])) ?>
+                </div>
+
+                <div class="columns is-mobile is-vcentered mt-3">
+                    <form method="POST" action="" class="column is-narrow">
+                        <input type="hidden" name="post_id" value="<?= $post_id ?>">
+                        <button type="submit" name="like"
+                            <?= ($userLiked || !isset($_SESSION['loggedin']) ||$ownUserPost) ? 'disabled' : '' ?>
+                                class="button <?= $userLiked ? 'is-danger' : 'is-light' ?>">
                     <span class="icon">
                         <i class="fa<?= $userLiked ? '-solid' : '-regular' ?> fa-heart"></i>
                     </span>
-                    </button>
-                    <span class="is-size-4"><?= $likesCount ?></span>
-                </form>
-
-                <form method="POST" action="" class="field has-addons column">
-                    <input type="hidden" name="post_id" value="<?= $post_id ?>">
-                    <div class="control" style="width: 90%;">
-                        <input type="text" name="comment" id="comment" class="input" <?= (!isset($_SESSION['loggedin'])) ? 'disabled placeholder="You must be logged in to comment."' : 'placeholder="Add a comment..."' ?>>
-                    </div>
-                    <div class="control">
-                        <button type="submit" name="comment-button" class="button is-info">
-                            Comment
+                            <span><?= $likesCount ?></span>
                         </button>
-                    </div>
-                </form>
+                    </form>
+
+                    <form method="POST" action="" class="column">
+                        <input type="hidden" name="post_id" value="<?= $post_id ?>">
+                        <div class="field has-addons">
+                            <div class="control is-expanded">
+                                <input type="text" name="comment" id="comment"
+                                       class="input"
+                                    <?= (!isset($_SESSION['loggedin'])) ? 'disabled placeholder="You must be logged in to comment."' : 'placeholder="Add a comment..."' ?>>
+                            </div>
+                            <div class="control">
+                                <button type="submit" name="comment-button" class="button is-info">
+                                    Comment
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
 
-            <div class="section mt-3">
+            <div class="card-content">
                 <?php foreach ($comments as $comment): ?>
                     <div class="notification">
                         <p><strong><?= htmlspecialchars($comment['username']) ?>:</strong> <?= nl2br(htmlspecialchars($comment['comment_text'])) ?></p>

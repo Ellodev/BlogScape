@@ -45,7 +45,9 @@ if ($_SESSION['loggedin'] !== true) {
 
 ?>
 
-<h1>Write a Post</h1>
+<h1 class="is-size-1">Write a Post</h1>
+
+<div class="block is-flex is-justify-content-center is-align-items-center" style="width: 600px" >
 
 <?php
 if (isset($error)) {
@@ -54,16 +56,26 @@ if (isset($error)) {
 ?>
 
 <form method="POST" action="">
-    <label for="title">Title:</label>
-    <input type="text" name="title" id="title" required value="<?php if (isset($title)) {echo "$title";} ?>">
-    <br>
-    <label for="text">Text:</label>
-    <textarea name="text" id="text" required><?php if (isset($text)) {echo "$text";} ?></textarea>
-    <br>
-    <label for="image">Image URL:</label>
-    <input type="url" name="image" id="image" required value="<?php if (isset($image)) {echo "$image";} ?>">
-    <br>
-    <!-- CSRF Token -->
+    <div class="field">
+        <label for="title" class="label">title</label>
+        <div class="control">
+            <input type="text" name="title" class="input" required value="<?php if (isset($title)) {echo "$title";} ?>">
+        </div>
+    </div>
+    <div class="field">
+        <label for="text" class="label">text</label>
+        <div class="control">
+            <textarea name="text" class="textarea is-normal" id="text" required><?php if (isset($text)) {echo "$text";} ?></textarea>
+        </div>
+    </div>
+    <div class="field">
+        <label class="label" for="image">image url</label>
+        <div class="control">
+            <input type="url" class="input is-url" name="image" id="image" required value="<?php if (isset($image)) {echo "$image";} ?>">
+        </div>
+    </div>
     <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-    <input type="submit" value="Submit">
+    <input class="button is-primary" type="submit" value="Submit">
 </form>
+
+</div>

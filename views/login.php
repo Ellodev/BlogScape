@@ -68,17 +68,26 @@ if (isset($error)) {
 ?>
 
 <form method="POST" action="login">
-    <label for="email">Email:</label>
-    <input type="email" name="email" id="email" required value="<?php if (isset($email)) {echo "$email";} ?>">
-    <br>
-
-    <label for="password">Password:</label>
-    <input type="password" name="password" id="password" required>
+    <div class="field">
+        <label for="email" class="label">Email</label>
+        <div class="control">
+            <input type="email" name="email" id="email" class="input" required value="<?php if (isset($email)) {echo "$email";} ?>">
+        </div>
+    </div>
+    <div class="field">
+        <label for="password" class="label">Password</label>
+        <div class="control">
+            <input type="password" name="password" id="password" class="input" required>
+        </div>
+    </div>
     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-    <br>
-
-    <button type="submit">Login</button>
+    <div class="field">
+        <div class="control">
+            <button type="submit" class="button is-primary">Login</button>
+        </div>
+    </div>
 </form>
+
 
 </body>
 </html>

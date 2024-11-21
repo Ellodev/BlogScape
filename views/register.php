@@ -69,30 +69,51 @@ if (isset($error)) {
     echo "<p style='color:red;'>" . htmlspecialchars($error) . "</p>";
 }
 ?>
-
 <form method="POST" action="">
-    <label for="firstname">First Name:</label>
-    <input type="text" name="firstname" id="firstname" required value="<?php if (isset($firstname)) {echo "$firstname";} ?>">
-    <br>
-    <label for="lastname">Last Name:</label>
-    <input type="text" name="lastname" id="lastname" required value="<?php if (isset($lastname)) {echo "$lastname";} ?>">
-    <br>
-    <label for="username">Username:</label>
-    <input type="text" name="username" id="username" required value="<?php if (isset($username)) {echo "$username";} ?>">
-    <br>
-    <label for="email">Email:</label>
-    <input type="email" name="email" id="email" required value="<?php if (isset($email)) {echo "$email";} ?>">
-    <br>
-    <label for="password">Password:</label>
-    <input type="password" name="password" id="password" required>
-    <br>
+    <div class="field">
+        <label for="firstname" class="label">First Name</label>
+        <div class="control">
+            <input type="text" name="firstname" id="firstname" class="input" required value="<?php if (isset($firstname)) {echo "$firstname";} ?>">
+        </div>
+    </div>
+    <div class="field">
+        <label for="lastname" class="label">Last Name</label>
+        <div class="control">
+            <input type="text" name="lastname" id="lastname" class="input" required value="<?php if (isset($lastname)) {echo "$lastname";} ?>">
+        </div>
+    </div>
+    <div class="field">
+        <label for="username" class="label">Username</label>
+        <div class="control">
+            <input type="text" name="username" id="username" class="input" required value="<?php if (isset($username)) {echo "$username";} ?>">
+        </div>
+    </div>
+    <div class="field">
+        <label for="email" class="label">Email</label>
+        <div class="control">
+            <input type="email" name="email" id="email" class="input" required value="<?php if (isset($email)) {echo "$email";} ?>">
+        </div>
+    </div>
+    <div class="field">
+        <label for="password" class="label">Password</label>
+        <div class="control">
+            <input type="password" name="password" id="password" class="input" required>
+        </div>
+    </div>
+    <div class="field">
+        <label for="confirm_password" class="label">Confirm Password</label>
+        <div class="control">
+            <input type="password" name="confirm_password" id="confirm_password" class="input" required>
+        </div>
+    </div>
     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-    <label for="confirm_password">Confirm Password:</label>
-    <input type="password" name="confirm_password" id="confirm_password" required>
-    <br>
-
-    <button type="submit">Register</button>
+    <div class="field">
+        <div class="control">
+            <button type="submit" class="button is-primary">Register</button>
+        </div>
+    </div>
 </form>
+
 
 <p>Already have an account? <a href="login">Login here</a></p>
 

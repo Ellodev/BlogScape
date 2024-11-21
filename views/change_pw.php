@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 <body>
 
-<h2>Register</h2>
+<h1 class="is-size-1">Change Password</h1>
 
 <?php
 if (isset($error)) {
@@ -71,21 +71,30 @@ if (isset($error)) {
 ?>
 
 <form method="POST" action="">
-    <label for="old_password">Old Password:</label>
-    <input type="password" name="old_password" id="old_password" required>
-    <br>
-    <label for="new_password">New Password:</label>
-    <input type="password" name="new_password" id="new_password" required>
-    <br>
-    <label for="confirm_password">Confirm Password:</label>
-    <input type="password" name="confirm_password" id="confirm_password" required>
+    <div class="field">
+        <label for="old_password" class="label">Old Password</label>
+        <div class="control">
+            <input type="password" name="old_password" id="old_password" class="input" required>
+        </div>
+    </div>
+    <div class="field">
+        <label for="new_password" class="label">New Password</label>
+        <div class="control">
+            <input type="password" name="new_password" id="new_password" class="input" required>
+        </div>
+    </div>
+    <div class="field">
+        <label for="confirm_password" class="label">Confirm Password</label>
+        <div class="control">
+            <input type="password" name="confirm_password" id="confirm_password" class="input" required>
+        </div>
+    </div>
     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-    <br>
-
-    <button type="submit">Register</button>
+    <div class="field">
+        <div class="control">
+            <button class="button is-primary" type="submit">Submit</button>
+        </div>
+    </div>
 </form>
-
-<p>Already have an account? <a href="login">Login here</a></p>
-
 </body>
 </html>

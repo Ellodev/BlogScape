@@ -35,8 +35,8 @@ if ($_SESSION['loggedin'] !== true) {
         if ($title === false || $text === false || $image === false) {
             $error = "Invalid input.";
         } else {
-            $stmt = $db->prepare("INSERT INTO posts (Title, Text, Picture, user) VALUES (:title, :text, :image, :user)");
-            $stmt->execute([':title' => $title, ':text' => $text, ':image' => $image, ':user' => $_SESSION['username']]);
+            $stmt = $db->prepare("INSERT INTO posts (title, content, image, user_id) VALUES (:title, :text, :image, :user_id)");
+            $stmt->execute([':title' => $title, ':text' => $text, ':image' => $image, ':user_id' => $_SESSION['user_id']]);
             header("Location: index");
             exit;
         }

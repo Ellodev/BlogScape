@@ -1,3 +1,4 @@
+<?php require("templates/header.php"); ?>
 <?php
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -34,6 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (password_verify($password, $user['password'])) {
                 $_SESSION['loggedin'] = true;
                 $_SESSION['username'] = $user['username'];
+                $_SESSION['user_id'] = $user['user_id'];
 
                 header("Location: index");
                 exit;

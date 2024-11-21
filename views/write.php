@@ -10,8 +10,8 @@ if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-if ($_SESSION['loggedin'] !== true) {
-    echo "You must be logged in to view this page.";
+if (!isset($_SESSION['loggedin'])) {
+    echo "You must be logged in to write a post.";
     exit;
 } else {
     $db = connectToDatabase();
@@ -45,9 +45,9 @@ if ($_SESSION['loggedin'] !== true) {
 
 ?>
 
-<h1 class="is-size-1">Write a Post</h1>
+<h1 class="is-size-1 has-text-centered">Write a Post</h1>
 
-<div class="block is-flex is-justify-content-center is-align-items-center" style="width: 600px" >
+<div class="block is-flex is-justify-content-center is-align-items-center">
 
 <?php
 if (isset($error)) {
@@ -55,7 +55,7 @@ if (isset($error)) {
 }
 ?>
 
-<form method="POST" action="">
+<form method="POST" action="" style="min-width: 300px">
     <div class="field">
         <label for="title" class="label">title</label>
         <div class="control">

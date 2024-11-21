@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $error = "First name and last name must not contain special characters!";
     }
     else {
-        $stmt = $db->prepare("SELECT * FROM users WHERE 'username' = :username");
+        $stmt = $db->prepare("SELECT * FROM users WHERE username = :username");
         $stmt->execute([':username' => $username]);
 
         if ($stmt->rowCount() > 0) {
@@ -69,7 +69,11 @@ if (isset($error)) {
     echo "<p style='color:red;'>" . htmlspecialchars($error) . "</p>";
 }
 ?>
-<form method="POST" action="">
+<h2 class="has-text-centered is-size-2">Register</h2>
+
+<div class="block is-flex is-justify-content-center is-align-items-center is-flex-direction-column">
+
+<form method="POST" action="" style="min-width: 400px">
     <div class="field">
         <label for="firstname" class="label">First Name</label>
         <div class="control">
@@ -109,13 +113,14 @@ if (isset($error)) {
     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
     <div class="field">
         <div class="control">
-            <button type="submit" class="button is-primary">Register</button>
+            <button type="submit" class="button is-primary is-centered">Register</button>
         </div>
     </div>
 </form>
+    <p>Already have an account? <a href="login">Login here</a></p>
+</div>
 
 
-<p>Already have an account? <a href="login">Login here</a></p>
 
 </body>
 </html>

@@ -7,18 +7,31 @@ if (session_status() == PHP_SESSION_NONE) {
 require_once 'templates/database.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['like'])) {
-        $post_id = $_POST['post_id'];
-        $db = connectToDatabase();
-        $stmt = $db->prepare("INSERT INTO likes (post_id, user_id) VALUES (:post_id, :user_id)");
-        $stmt->execute([':post_id' => $post_id , ':user_id' => $_SESSION['user_id']]);
-    } elseif (isset($_POST['comment'])) {
-        $post_id = $_POST['post_id'];
-        $comment = $_POST['comment'];
-        $db = connectToDatabase();
-        $stmt = $db->prepare("INSERT INTO comments (post_id, user_id, comment_text) VALUES (:post_id, :user_id, :comment)");
-        $stmt->execute([':post_id' => $post_id , ':user_id' => $_SESSION['user_id'], ':comment' => htmlspecialchars($comment)]);
+    if (!isset($_SESSION['loggedin'])) {
+        echo "You must be logged in to like or comment.";
+    } else {
+        if (isset($_POST['like'])) {
+            $post_id = $_POST['post_id'];
+            $db = connectToDatabase();
+            $stmt = $db->prepare("SELECT * FROM likes WHERE post_id = :post_id AND user_id = :user_id");
+            $stmt->execute([':post_id' => $post_id, ':user_id' => $_SESSION['user_id']]);
+            $userLiked = $stmt->fetch();
+            if ($userLiked) {
+                echo "You've already liked this post.";
+            } else {
+                $stmt = $db->prepare("INSERT INTO likes (post_id, user_id) VALUES (:post_id, :user_id)");
+                $stmt->execute([':post_id' => $post_id , ':user_id' => $_SESSION['user_id']]);
+            }
+        }
+        if (isset($_POST['comment'])) {
+            $post_id = $_POST['post_id'];
+            $comment = $_POST['comment'];
+            $db = connectToDatabase();
+            $stmt = $db->prepare("INSERT INTO comments (post_id, user_id, comment_text) VALUES (:post_id, :user_id, :comment)");
+            $stmt->execute([':post_id' => $post_id , ':user_id' => $_SESSION['user_id'], ':comment' => htmlspecialchars($comment)]);
+        }
     }
+
 }
 ?>
 
@@ -39,7 +52,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     foreach ($posts as $post) {
         $post_id = $post['post_id'];
+
         $likesCount = $db->query("SELECT COUNT(*) FROM likes WHERE post_id = {$post_id}")->fetchColumn();
+        $userLiked = false;
+        if (isset($_SESSION['user_id'])) {
+            $stmt = $db->prepare("SELECT * FROM likes WHERE post_id = :post_id AND user_id = :user_id");
+            $stmt->execute([':post_id' => $post_id, ':user_id' => $_SESSION['user_id']]);
+            $userLiked = $stmt->fetch();
+        }
+
+        $ownUserPost = false;
+        if (isset($_SESSION['user_id'])) {
+            $stmt = $db->prepare("SELECT * FROM posts WHERE post_id = :post_id AND user_id = :user_id");
+            $stmt->execute([':post_id' => $post_id, ':user_id' => $_SESSION['user_id']]);
+            $ownUserPost = $stmt->fetch();
+        }
+
         $commentsQuery = "
         SELECT comments.*, users.username
         FROM comments
@@ -53,28 +81,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         ?>
         <div class="box" style="max-width: 800px; width: 100%; margin-bottom: 20px;">
             <h3 class="is-size-3"><?= htmlspecialchars($post['title']) ?></h3>
+            <p class=""><small>By <?= htmlspecialchars($post['username']) ?> on <?= $post['created_at'] ?></small></p>
             <img src="<?= htmlspecialchars($post['image']) ?>" alt="Post Image" style="max-height: 300px; width: 100%; object-fit: cover;">
             <p class="mt-2"><?= nl2br(htmlspecialchars($post['content'])) ?></p>
-            <p><small>By <?= htmlspecialchars($post['username']) ?> on <?= $post['created_at'] ?></small></p>
 
-            <!-- Like Button -->
-            <form method="POST" action="" class="mt-2">
-                <input type="hidden" name="post_id" value="<?= $post_id ?>">
-                <button type="submit" name="like" class="button is-primary is-small">Like</button>
-            </form>
-            <p>Likes: <?= $likesCount ?></p>
+            <div class="columns is-flex is-justify-content-center is-align-items-center">
+                <form method="POST" action="" class="mt-2 field column is-narrow">
+                    <input type="hidden" name="post_id" value="<?= $post_id ?>">
+                    <button type="submit" name="like" <?= ($userLiked || !isset($_SESSION['loggedin']) ||$ownUserPost) ? 'disabled' : '' ?> class="button is-light">
+                    <span class="icon">
+                        <i class="fa<?= $userLiked ? '-solid' : '-regular' ?> fa-heart"></i>
+                    </span>
+                    </button>
+                    <span class="is-size-4"><?= $likesCount ?></span>
+                </form>
 
-            <!-- Comment Form -->
-            <form method="POST" action="" class="mt-2">
-                <input type="hidden" name="post_id" value="<?= $post_id ?>">
-                <input type="text" name="comment" id="comment" class="input is-small" placeholder="Add a comment...">
-                <button type="submit" name="comment" class="button is-info is-small mt-1">Comment</button>
-            </form>
+                <form method="POST" action="" class="field has-addons column">
+                    <input type="hidden" name="post_id" value="<?= $post_id ?>">
+                    <div class="control" style="width: 90%;">
+                        <input type="text" name="comment" id="comment" class="input" <?= (!isset($_SESSION['loggedin'])) ? 'disabled placeholder="You must be logged in to comment."' : 'placeholder="Add a comment..."' ?>>
+                    </div>
+                    <div class="control">
+                        <button type="submit" name="comment-button" class="button is-info">
+                            Comment
+                        </button>
+                    </div>
+                </form>
+            </div>
 
-            <!-- Comments Section -->
             <div class="section mt-3">
                 <?php foreach ($comments as $comment): ?>
-                    <div class="notification is-light">
+                    <div class="notification">
                         <p><strong><?= htmlspecialchars($comment['username']) ?>:</strong> <?= nl2br(htmlspecialchars($comment['comment_text'])) ?></p>
                     </div>
                 <?php endforeach; ?>

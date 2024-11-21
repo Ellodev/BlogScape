@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 <body>
 
-<h2>Login</h2>
+<h2 class="has-text-centered is-size-2">Login</h2>
 
 <?php
 if (isset($error)) {
@@ -67,7 +67,9 @@ if (isset($error)) {
 }
 ?>
 
-<form method="POST" action="login">
+<div class="block is-flex is-justify-content-center is-align-items-center">
+
+<form method="POST" action="login" style="min-width:400px">
     <div class="field">
         <label for="email" class="label">Email</label>
         <div class="control">
@@ -87,6 +89,9 @@ if (isset($error)) {
         </div>
     </div>
 </form>
+
+</div>
+
 
 
 </body>

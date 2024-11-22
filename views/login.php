@@ -22,8 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         die('CSRF token validation failed.');
     }
 
-
-    if ($email === false) {
+    if (validateEmail($email) === false) {
         $error = "Invalid email.";
     } else {
         $stmt = $db->prepare("SELECT * FROM users WHERE email = :email");
@@ -49,7 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             $error = "No user found with that email.";
         }
-
     }
 }
 ?>
@@ -68,39 +66,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <?php
 if (isset($error)) {
     $_SESSION['message'] = [
-        'content' => htmlspecialchars($error),
+        'content' => htmlspecialchars($error), // Sanitize error message to prevent XSS
         'type' => 'danger', // can be 'success', 'danger', 'info', or 'warning'
     ];
     header("Location: login");
+    exit;
 }
 ?>
 
 <div class="block is-flex is-justify-content-center is-align-items-center">
 
-<form method="POST" action="login" style="min-width:400px">
-    <div class="field">
-        <label for="email" class="label">Email</label>
-        <div class="control">
-            <input type="email" name="email" id="email" class="input" required value="<?php if (isset($email)) {echo "$email";} ?>">
+    <form method="POST" action="login" style="min-width:400px">
+        <div class="field">
+            <label for="email" class="label">Email</label>
+            <div class="control">
+                <input type="email" name="email" id="email" class="input" required value="<?php if (isset($email)) {echo htmlspecialchars($email);} ?>">
+            </div>
         </div>
-    </div>
-    <div class="field">
-        <label for="password" class="label">Password</label>
-        <div class="control">
-            <input type="password" name="password" id="password" class="input" required>
+        <div class="field">
+            <label for="password" class="label">Password</label>
+            <div class="control">
+                <input type="password" name="password" id="password" class="input" required>
+            </div>
         </div>
-    </div>
-    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-    <div class="field">
-        <div class="control">
-            <button type="submit" class="button is-primary">Login</button>
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+        <div class="field">
+            <div class="control">
+                <button type="submit" class="button is-primary">Login</button>
+            </div>
         </div>
-    </div>
-</form>
+    </form>
 
 </div>
-
-
 
 </body>
 </html>

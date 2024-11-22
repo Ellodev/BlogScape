@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->execute([':post_id' => $post_id]);
         $comments = $stmt->fetchAll();
         ?>
-        <div class="card" style="max-width: 800px; margin: 0 auto 20px;">
+        <div class="card" style="max-width: 600px; margin: 0 auto 20px;">
             <div class="card-image">
                 <figure class="image is-16by9">
                     <img
@@ -141,7 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
 
             <div class="card-content">
-                <h3 class="title is-3"><?= htmlspecialchars($post['title']) ?></h3>
+                <h3 class="title is-3"><?= $post['title'] ?></h3>
                 <div class="is-flex is-flex-direction-row is-align-items-center">
                     <figure class="image is-32x32" style="overflow: hidden">
                         <img src="<?= isset($post['profile_picture']) && !empty($post['profile_picture'])
@@ -195,8 +195,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <?php foreach ($comments as $comment): ?>
                     <div class="notification is-flex is-align-items-center">
                         <figure class="image is-24x24" style="overflow: hidden">
-                            <img src="<?= isset($post['profile_picture']) && !empty($post['profile_picture'])
-                                ? htmlspecialchars($post['profile_picture'])
+                            <img src="<?= isset($comment['profile_picture']) && !empty($comment['profile_picture'])
+                                ? htmlspecialchars($comment['profile_picture'])
                                 : 'uploads/default-avatar-light.png'; ?>"
                                  alt="Profile Picture"
                                  style="object-fit: cover; border-radius: 50%; width: 100%; height: 100%">

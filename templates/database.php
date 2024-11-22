@@ -52,6 +52,7 @@ function validatePassword($password) {
 
 function sanitizeInput($input) {
     $input = trim($input);
+    $input = stripslashes($input);
     return htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
 }
 

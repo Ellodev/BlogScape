@@ -42,7 +42,7 @@ if (isset($_SESSION['loggedin'])) {
                                 if (!empty($user['profile_picture'])) {
                                     $profilePicturePath = $user['profile_picture'];
                             }   else {
-                                    $profilePicturePath = 'uploads/default-avatar-light.png';
+                                    $profilePicturePath = 'uploads/default-avatar.png';
                             }
                             }
                             ?>

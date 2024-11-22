@@ -148,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->execute([':post_id' => $post_id]);
         $comments = $stmt->fetchAll();
         ?>
-        <div class="card" style="width: 600px; margin: 0 auto 20px;">
+        <div class="card" id="post" style="width: 600px; margin: 0 auto 20px;">
             <div class="card-image">
                 <figure class="image is-16by9">
                     <img
@@ -245,6 +245,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
     <?php } ?>
 </div>
+
 <script>
     window.addEventListener('beforeunload', function () {
         localStorage.setItem('scrollPosition', window.scrollY);

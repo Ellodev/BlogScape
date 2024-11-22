@@ -70,6 +70,29 @@ $user = $stmt->fetch();
 
         <div class="columns is-centered">
             <div class="column is-half">
+                <h2 class="subtitle is-size-3">Stats</h2>
+                <?php
+                $stmt = $db->prepare("SELECT COUNT(*) FROM posts WHERE user_id = :user_id");
+                $stmt->execute([':user_id' => $user['user_id']]);
+                $posts = $stmt->fetchAll();
+
+                $stmt = $db->prepare("SELECT COUNT(*) FROM likes WHERE user_id = :user_id");
+                $stmt->execute([':user_id' => $user['user_id']]);
+                $likes = $stmt->fetchAll();
+
+                $stmt = $db->prepare("SELECT COUNT(*) FROM comments WHERE user_id = :user_id");
+                $stmt->execute([':user_id' => $user['user_id']]);
+                $comments = $stmt->fetchAll();
+
+                echo "<h2 class='subtitle is-size-4'>Posts: " . $posts[0]['COUNT(*)'] . "</h2>";
+                echo "<h2 class='subtitle is-size-4'>Likes: " . $likes[0]['COUNT(*)'] . "</h2>";
+                echo "<h2 class='subtitle is-size-4'>Comments: " . $comments[0]['COUNT(*)'] . "</h2>";
+                ?>
+            </div>
+        </div>
+
+        <div class="columns is-centered">
+            <div class="column is-half">
                 <form method="post" enctype="multipart/form-data" action="models/images.php" class="box">
                     <div class="field">
                         <label class="label">Profile Picture</label>

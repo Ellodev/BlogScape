@@ -45,7 +45,7 @@ if (!isset($_SESSION['loggedin'])) {
 
 ?>
 
-<h1 class="is-size-1 has-text-centered">Write a Post</h1>
+<h1 class="is-size-1 has-text-centered title">write a post</h1>
 
 <div class="block is-flex is-justify-content-center is-align-items-center">
 

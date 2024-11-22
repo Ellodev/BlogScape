@@ -12,7 +12,7 @@ $blogs = $db->query($query)->fetchAll();
 
 ?>
 
-<h1 class="is-size-1 has-text-centered">Other Blogs</h1>
+<h1 class="is-size-1 has-text-centered title">other blogs</h1>
 
 <div class="is-flex is-justify-content-center is-flex-direction-column is-align-items-center">
     <?php

@@ -17,7 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->execute([':post_id' => $post_id, ':user_id' => $_SESSION['user_id']]);
             $userLiked = $stmt->fetch();
             if ($userLiked) {
-                echo "You've already liked this post.";
+                $stmt = $db->prepare("DELETE FROM likes WHERE post_id = :post_id AND user_id = :user_id");
+                $stmt->execute([':post_id' => $post_id , ':user_id' => $_SESSION['user_id']]);
             } else {
                 $stmt = $db->prepare("INSERT INTO likes (post_id, user_id) VALUES (:post_id, :user_id)");
                 $stmt->execute([':post_id' => $post_id , ':user_id' => $_SESSION['user_id']]);
@@ -35,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 ?>
 
-<h2 class="is-size-2 has-text-centered title">posts</h2>
+<h1 class="is-size-1 has-text-centered title">posts</h1>
 
 <div class="is-flex is-justify-content-center is-flex-direction-column is-flex-wrap is-align-items-center">
     <?php
@@ -107,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <form method="POST" action="" class="column is-narrow">
                         <input type="hidden" name="post_id" value="<?= $post_id ?>">
                         <button type="submit" name="like"
-                            <?= ($userLiked || !isset($_SESSION['loggedin']) ||$ownUserPost) ? 'disabled' : '' ?>
+                            <?= (!isset($_SESSION['loggedin']) ||$ownUserPost) ? 'disabled' : '' ?>
                                 class="button <?= $userLiked ? 'is-danger' : 'is-light' ?>">
                     <span class="icon">
                         <i class="fa<?= $userLiked ? '-solid' : '-regular' ?> fa-heart"></i>

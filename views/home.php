@@ -1,10 +1,13 @@
 <?php require "templates/header.php"; ?>
 
 <?php
+
+require_once 'templates/database.php';
+$db = connectToDatabase();
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-require_once 'templates/database.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!isset($_SESSION['loggedin'])) {
@@ -12,7 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         if (isset($_POST['like'])) {
             $post_id = $_POST['post_id'];
-            $db = connectToDatabase();
             $stmt = $db->prepare("SELECT * FROM likes WHERE post_id = :post_id AND user_id = :user_id");
             $stmt->execute([':post_id' => $post_id, ':user_id' => $_SESSION['user_id']]);
             $userLiked = $stmt->fetch();
@@ -27,9 +29,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (isset($_POST['comment'])) {
             $post_id = $_POST['post_id'];
             $comment = $_POST['comment'];
-            $db = connectToDatabase();
             $stmt = $db->prepare("INSERT INTO comments (post_id, user_id, comment_text) VALUES (:post_id, :user_id, :comment)");
             $stmt->execute([':post_id' => $post_id , ':user_id' => $_SESSION['user_id'], ':comment' => htmlspecialchars($comment)]);
+        } else if (isset($_POST['delete-comment'])) {
+            $comment_id = $_POST['comment_id'];
+            $stmt = $db->prepare("SELECT * FROM comments WHERE comment_id = :comment_id AND user_id = :user_id");
+            $stmt->execute([':comment_id' => $comment_id, ':user_id' => $_SESSION['user_id']]);
+            $ownComment = $stmt->fetch();
+            if ($ownComment) {
+                $stmt = $db->prepare("DELETE FROM comments WHERE comment_id = :comment_id");
+                $stmt->execute([':comment_id' => $comment_id]);
+            }
         }
     }
 
@@ -40,8 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <div class="is-flex is-justify-content-center is-flex-direction-column is-flex-wrap is-align-items-center">
     <?php
-    $db = connectToDatabase();
-
     $query = "
     SELECT posts.*, users.username
     FROM posts
@@ -51,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $posts = $db->query($query)->fetchAll();
 
-    foreach ($posts as $post) {
+    foreach ($posts as $post) { // Loop starts here
         $post_id = $post['post_id'];
 
         $stmt = $db->prepare("SELECT COUNT(*) FROM likes WHERE post_id = :post_id");
@@ -110,9 +118,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <button type="submit" name="like"
                             <?= (!isset($_SESSION['loggedin']) ||$ownUserPost) ? 'disabled' : '' ?>
                                 class="button <?= $userLiked ? 'is-danger' : 'is-light' ?>">
-                    <span class="icon">
-                        <i class="fa<?= $userLiked ? '-solid' : '-regular' ?> fa-heart"></i>
-                    </span>
+                            <span class="icon">
+                                <i class="fa<?= $userLiked ? '-solid' : '-regular' ?> fa-heart"></i>
+                            </span>
                             <span><?= $likesCount ?></span>
                         </button>
                     </form>
@@ -139,9 +147,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <?php foreach ($comments as $comment): ?>
                     <div class="notification">
                         <p><strong><?= htmlspecialchars($comment['username']) ?>:</strong> <?= nl2br(htmlspecialchars($comment['comment_text'])) ?></p>
+                        <?php
+                        if (isset($_SESSION['user_id']) && $comment['user_id'] == $_SESSION['user_id']) {
+                            ?>
+                            <form method="POST" action="">
+                                <input type="hidden" name="comment_id" value="<?= $comment['comment_id']; ?>">
+                                <button type="submit" name="delete-comment" class="button is-danger is-small">
+                                    Delete
+                                </button>
+                            </form>
+                        <?php } ?>
                     </div>
                 <?php endforeach; ?>
             </div>
         </div>
     <?php } ?>
 </div>
+<script>
+    window.addEventListener('beforeunload', function () {
+        localStorage.setItem('scrollPosition', window.scrollY);
+    });
+
+    window.addEventListener('load', function () {
+        const savedPosition = localStorage.getItem('scrollPosition');
+        if (savedPosition !== null) {
+            window.scrollTo(0, savedPosition);
+            localStorage.removeItem('scrollPosition');
+        }
+    });
+</script>

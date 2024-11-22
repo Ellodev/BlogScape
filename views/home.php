@@ -151,13 +151,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                              style="object-fit: cover; border-radius: 50%; width: 100%; height: 100%">
                     </figure>
                     <p class="subtitle is-6 has-text-grey-light">
-                         <strong><?= htmlspecialchars($post['username'])  ?></strong> at <?= $post['created_at'] ?>
+                         <strong><?= $post['username']  ?></strong> at <?= $post['created_at'] ?>
                     </p>
                 </div>
 
 
                 <div class="content">
-                    <?= nl2br(htmlspecialchars($post['content'])) ?>
+                    <?= nl2br($post['content']) ?>
                 </div>
 
                 <div class="columns is-mobile is-vcentered mt-3">
@@ -201,7 +201,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                  alt="Profile Picture"
                                  style="object-fit: cover; border-radius: 50%; width: 100%; height: 100%">
                         </figure>
-                        <p><strong><?= htmlspecialchars($comment['username']) ?>:</strong> <?= nl2br(htmlspecialchars($comment['comment_text'])) ?></p>
+                        <p><strong><?= $comment['username'] ?>:</strong> <?= nl2br($comment['comment_text']) ?></p>
                         <?php
                         if (isset($_SESSION['user_id']) && $comment['user_id'] == $_SESSION['user_id']) {
                             ?>

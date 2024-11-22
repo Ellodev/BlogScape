@@ -16,5 +16,8 @@ $blogs = $db->query($query)->fetchAll();
 <div class="is-flex is-justify-content-center is-flex-direction-column is-align-items-center">
     <?php
     foreach ($blogs as $blog) {
-       echo "<a href='{$blog['blog_url']}' target='_blank'>{$blog['blog_von']}</a>";
+        $blogURL = htmlspecialchars($blog['blog_url']);
+        $blogVon = htmlspecialchars($blog['blog_von']);
+
+       echo "<a href='{$blogURL}' target='_blank'>{$blogVon}</a>";
     }?>

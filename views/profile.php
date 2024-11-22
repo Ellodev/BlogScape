@@ -42,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 $stmt = $db->prepare("SELECT * FROM users WHERE username = :username");
 $stmt->execute([':username' => $_SESSION['username']]);
 $user = $stmt->fetch();
+
 ?>
 
 <section class="section">
@@ -82,9 +83,9 @@ $user = $stmt->fetch();
                 $stmt->execute([':user_id' => $user['user_id']]);
                 $comments = $stmt->fetch();
 
-                echo "<h2 class='subtitle is-size-4'>Posts: " . htmlspecialchars($posts[0]['COUNT(*)']) . "</h2>";
-                echo "<h2 class='subtitle is-size-4'>Likes: " . htmlspecialchars($likes[0]['COUNT(*)']) . "</h2>";
-                echo "<h2 class='subtitle is-size-4'>Comments: " . htmlspecialchars($comments[0]['COUNT(*)']) . "</h2>";
+                echo "<h2 class='subtitle is-size-4'>Posts: " . htmlspecialchars($posts['COUNT(*)']) . "</h2>";
+                echo "<h2 class='subtitle is-size-4'>Likes: " . htmlspecialchars($likes['COUNT(*)']) . "</h2>";
+                echo "<h2 class='subtitle is-size-4'>Comments: " . htmlspecialchars($comments['COUNT(*)']) . "</h2>";
                 ?>
             </div>
         </div>

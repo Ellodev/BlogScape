@@ -77,6 +77,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 ];
                 header('Location: home');
             }
+        } else if (isset($_POST['delete-post'])) {
+            $post_id = $_POST['post_id'];
+            $stmt = $db->prepare("SELECT * FROM posts WHERE post_id = :post_id AND user_id = :user_id");
+            $stmt->execute([':post_id' => $post_id, ':user_id' => $_SESSION['user_id']]);
+            $ownPost = $stmt->fetch();
+            if ($ownPost) {
+                $stmt = $db->prepare("DELETE FROM posts WHERE post_id = :post_id");
+                $stmt->execute([':post_id' => $post_id]);
+                $_SESSION['message'] = [
+                    'content' => 'Post deleted.',
+                    'type' => 'success', // can be 'success', 'danger', 'info', or 'warning'
+                ];
+                header('Location: home');
+            } else {
+                $_SESSION['message'] = [
+                    'content' => 'You can only delete your own posts.',
+                    'type' => 'warning', // can be 'success', 'danger', 'info', or 'warning'
+                ];
+                header('Location: home');
+            }
         }
     }
 
@@ -128,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->execute([':post_id' => $post_id]);
         $comments = $stmt->fetchAll();
         ?>
-        <div class="card" style="max-width: 600px; margin: 0 auto 20px;">
+        <div class="card" style="width: 600px; margin: 0 auto 20px;">
             <div class="card-image">
                 <figure class="image is-16by9">
                     <img
@@ -154,7 +174,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                          <strong><?= $post['username']  ?></strong> at <?= $post['created_at'] ?>
                     </p>
                 </div>
-
+                <?php if ($ownUserPost) { ?>
+                    <form method="POST" action="" class="is-flex is-justify-content-flex-end">
+                        <input type="hidden" name="post_id" value="<?= $post_id ?>">
+                        <button type="submit" name="delete-post" class="button is-danger is-small">
+                            Delete
+                        </button>
+                    </form>
+                <?php } ?>
 
                 <div class="content">
                     <?= nl2br($post['content']) ?>

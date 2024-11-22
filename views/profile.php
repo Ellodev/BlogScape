@@ -1,7 +1,6 @@
 <?php
 require "templates/header.php";
 require "templates/database.php";
-require 'templates/notification.php';
 
 $db = connectToDatabase();
 
@@ -18,11 +17,33 @@ $stmt = $db->prepare("SELECT * FROM users WHERE username = :username");
 $stmt->execute([':username' => $_SESSION['username']]);
 $user = $stmt->fetch();
 
+// Check if a profile picture exists
 if ($user && !empty($user['profile_picture'])) {
     $profilePicturePath = $user['profile_picture'];
 } else {
+    // Default image if no profile picture is set
     $profilePicturePath = 'uploads/default-avatar.png';  // You can use a default image
 }
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $firstname = sanitizeInput($_POST['firstname']);
+    $lastname = sanitizeInput($_POST['lastname']);
+    $email = validateEmail($_POST['email']);
+
+    $stmt = $db->prepare("UPDATE users SET firstname = :firstname, lastname = :lastname, email = :email WHERE username = :username");
+    $stmt->execute([':firstname' => $firstname, ':lastname' => $lastname, ':email' => $email, ':username' => $_SESSION['username']]);
+    $_SESSION['message'] = [
+        'content' => 'Profile updated successfully.',
+        'type' => 'success', // can be 'success', 'danger', 'info', or 'warning'
+    ];
+}
+
+$stmt = $db->prepare("SELECT * FROM users WHERE username = :username");
+$stmt->execute([':username' => $_SESSION['username']]);
+$user = $stmt->fetch();
+
+
+
 
 ?>
 
@@ -32,8 +53,8 @@ if ($user && !empty($user['profile_picture'])) {
 
         <div class="columns is-centered">
             <div class="column is-narrow">
-                <figure class="image is-128x128 is-rounded">
-                    <img src="<?php echo $profilePicturePath; ?>" alt="Profile Picture">
+                <figure class="image is-128x128" style="overflow: hidden">
+                    <img src="<?php echo $profilePicturePath; ?>" alt="Profile Picture"  style="object-fit: cover; border-radius: 50%; object-fit: cover; width: 100%; height: 100%">
                 </figure>
             </div>
         </div>
@@ -56,7 +77,13 @@ if ($user && !empty($user['profile_picture'])) {
                             <input type="file" name="profile_picture" class="input" required>
                         </div>
                     </div>
-
+                    <div class="field is-grouped is-grouped-centered">
+                        <div class="control">
+                            <button type="submit" class="button is-primary">Update Profile Picture</button>
+                        </div>
+                    </div>
+                </form>
+                <form method="post" action="">
                     <div class="field">
                         <label class="label">First Name</label>
                         <div class="control">

@@ -49,18 +49,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['profile_picture'])) {
 
             // Execute the query
             if ($stmt->execute()) {
-                echo "Profile picture uploaded successfully!";
+                $_SESSION['message'] = [
+                    'content' => 'Profile picture updated successfully.',
+                    'type' => 'success', // can be 'success', 'danger', 'info', or 'warning'
+                ];
+                header('Location: profile');
             } else {
-                echo "Error: Unable to update the profile picture.";
+                $_SESSION['message'] = [
+                    'content' => 'Error updating profile picture.',
+                    'type' => 'danger', // can be 'success', 'danger', 'info', or 'warning'
+                ];
+                header('Location: profile');
             }
         } catch (PDOException $e) {
-            echo "Database error: " . $e->getMessage();
+            $_SESSION['message'] = [
+                'content' => 'Error updating profile picture.',
+                'type' => 'danger', // can be 'success', 'danger', 'info', or 'warning'
+            ];
+            header('Location: profile');
         }
     } else {
-        echo "Sorry, there was an error uploading your file.";
+        $_SESSION['message'] = [
+            'content' => 'Error updating profile picture.',
+            'type' => 'danger', // can be 'success', 'danger', 'info', or 'warning'
+        ];
+        header('Location: profile');
     }
 } else {
-    echo "No file uploaded.";
+    $_SESSION['message'] = [
+        'content' => 'Error updating profile picture.',
+        'type' => 'danger', // can be 'success', 'danger', 'info', or 'warning'
+    ];
+    header('Location: profile');
 }
 
 ?>

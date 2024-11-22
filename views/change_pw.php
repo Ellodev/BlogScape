@@ -1,6 +1,5 @@
 <?php require "templates/header.php";
 require "templates/notification.php";?>
-?>
 <?php
 if (session_status() == PHP_SESSION_NONE) {
     session_start();

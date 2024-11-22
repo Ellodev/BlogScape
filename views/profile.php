@@ -22,7 +22,7 @@ if ($user && !empty($user['profile_picture'])) {
     $profilePicturePath = $user['profile_picture'];
 } else {
     // Default image if no profile picture is set
-    $profilePicturePath = 'uploads/default-avatar.png';  // You can use a default image
+    $profilePicturePath = 'uploads/default-avatar-light.png';  // You can use a default image
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

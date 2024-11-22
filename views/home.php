@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <div class="is-flex is-justify-content-center is-flex-direction-column is-flex-wrap is-align-items-center">
     <?php
     $query = "
-    SELECT posts.*, users.username
+    SELECT posts.*, users.username, users.profile_picture
     FROM posts
     JOIN users ON posts.user_id = users.user_id
     ORDER BY posts.created_at DESC
@@ -118,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         $commentsQuery = "
-        SELECT comments.*, users.username
+        SELECT comments.*, users.username, users.profile_picture
         FROM comments
         JOIN users ON comments.user_id = users.user_id
         WHERE comments.post_id = :post_id
@@ -142,9 +142,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             <div class="card-content">
                 <h3 class="title is-3"><?= htmlspecialchars($post['title']) ?></h3>
-                <p class="subtitle is-6 has-text-grey-light">
-                    By <?= htmlspecialchars($post['username']) ?> on <?= $post['created_at'] ?>
-                </p>
+                <div class="is-flex is-flex-direction-row is-align-items-center">
+                    <figure class="image is-32x32" style="overflow: hidden">
+                        <img src="<?= isset($post['profile_picture']) && !empty($post['profile_picture'])
+                            ? htmlspecialchars($post['profile_picture'])
+                            : 'uploads/default-avatar-light.png'; ?>"
+                             alt="Profile Picture"
+                             style="object-fit: cover; border-radius: 50%; width: 100%; height: 100%">
+                    </figure>
+                    <p class="subtitle is-6 has-text-grey-light">
+                         <strong><?= htmlspecialchars($post['username'])  ?></strong> at <?= $post['created_at'] ?>
+                    </p>
+                </div>
+
 
                 <div class="content">
                     <?= nl2br(htmlspecialchars($post['content'])) ?>
@@ -183,7 +193,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             <div class="card-content">
                 <?php foreach ($comments as $comment): ?>
-                    <div class="notification">
+                    <div class="notification is-flex is-align-items-center">
+                        <figure class="image is-24x24" style="overflow: hidden">
+                            <img src="<?= isset($post['profile_picture']) && !empty($post['profile_picture'])
+                                ? htmlspecialchars($post['profile_picture'])
+                                : 'uploads/default-avatar-light.png'; ?>"
+                                 alt="Profile Picture"
+                                 style="object-fit: cover; border-radius: 50%; width: 100%; height: 100%">
+                        </figure>
                         <p><strong><?= htmlspecialchars($comment['username']) ?>:</strong> <?= nl2br(htmlspecialchars($comment['comment_text'])) ?></p>
                         <?php
                         if (isset($_SESSION['user_id']) && $comment['user_id'] == $_SESSION['user_id']) {

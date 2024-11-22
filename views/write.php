@@ -1,5 +1,6 @@
 <?php require "templates/header.php" ?>
 <?php require "templates/database.php";
+require "templates/notification.php";
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -11,7 +12,11 @@ if (!isset($_SESSION['csrf_token'])) {
 }
 
 if (!isset($_SESSION['loggedin'])) {
-    echo "You must be logged in to write a post.";
+    $_SESSION['message'] = [
+        'content' => 'You must be logged in to write a post.',
+        'type' => 'warning', // can be 'success', 'danger', 'info', or 'warning'
+    ];
+    header('Location: login');
     exit;
 } else {
     $db = connectToDatabase();
@@ -22,7 +27,6 @@ if (!isset($_SESSION['loggedin'])) {
             die('CSRF token validation failed.');
         }
 
-        $error = "You're logged in";
         $title = $_POST['title'];
         $text = $_POST['text'];
         $image = $_POST['image'];
@@ -37,8 +41,12 @@ if (!isset($_SESSION['loggedin'])) {
         } else {
             $stmt = $db->prepare("INSERT INTO posts (title, content, image, user_id) VALUES (:title, :text, :image, :user_id)");
             $stmt->execute([':title' => $title, ':text' => $text, ':image' => $image, ':user_id' => $_SESSION['user_id']]);
-            header("Location: index");
-            exit;
+            $_SESSION['message'] = [
+                'content' => 'Post created successfully!',
+                'type' => 'success', // can be 'success', 'danger', 'info', or 'warning'
+            ];
+
+            header('Location: index');
         }
     }
 }
@@ -51,7 +59,10 @@ if (!isset($_SESSION['loggedin'])) {
 
 <?php
 if (isset($error)) {
-    echo "<p style='color:red;'>" . htmlspecialchars($error) . "</p>";
+    $_SESSION['message'] = [
+        'content' => htmlspecialchars($error),
+        'type' => 'error', // can be 'success', 'danger', 'info', or 'warning'
+    ];
 }
 ?>
 

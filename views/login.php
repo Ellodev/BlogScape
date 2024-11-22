@@ -1,5 +1,8 @@
 <?php require("templates/header.php"); ?>
 <?php
+
+require "templates/notification.php";
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -37,6 +40,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['user_id'] = $user['user_id'];
 
+                $_SESSION['message'] = [
+                    'content' => 'Logged in successfully!',
+                    'type' => 'success', // can be 'success', 'danger', 'info', or 'warning'
+                ];
+
                 header("Location: index");
                 exit;
             } else {
@@ -63,7 +71,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <?php
 if (isset($error)) {
-    echo "<p style='color:red;'>" . htmlspecialchars($error) . "</p>";
+    $_SESSION['message'] = [
+        'content' => htmlspecialchars($error),
+        'type' => 'danger', // can be 'success', 'danger', 'info', or 'warning'
+    ];
+    header("Location: login");
 }
 ?>
 

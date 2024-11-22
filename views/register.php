@@ -1,4 +1,6 @@
-<?php require "templates/header.php"?>
+<?php require "templates/header.php";
+require "templates/notification.php";?>
+
 <?php
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -64,7 +66,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <?php
 if (isset($error)) {
-    echo "<p style='color:red;'>" . htmlspecialchars($error) . "</p>";
+    $_SESSION['message'] = [
+        'content' => $error,
+        'type' => 'danger', // can be 'success', 'danger', 'info', or 'warning'
+    ];
 }
 ?>
 <h2 class="has-text-centered is-size-2">Register</h2>

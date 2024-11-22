@@ -1,6 +1,7 @@
 <?php
 require "templates/header.php";
 require "templates/database.php";
+require 'templates/notification.php';
 
 $db = connectToDatabase();
 
@@ -17,11 +18,9 @@ $stmt = $db->prepare("SELECT * FROM users WHERE username = :username");
 $stmt->execute([':username' => $_SESSION['username']]);
 $user = $stmt->fetch();
 
-// Check if a profile picture exists
 if ($user && !empty($user['profile_picture'])) {
     $profilePicturePath = $user['profile_picture'];
 } else {
-    // Default image if no profile picture is set
     $profilePicturePath = 'uploads/default-avatar.png';  // You can use a default image
 }
 

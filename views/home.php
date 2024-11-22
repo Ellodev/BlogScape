@@ -1,17 +1,19 @@
-<?php require "templates/header.php"; ?>
-
-<?php
-
+<?php require "templates/header.php";
+require "templates/notification.php";
 require_once 'templates/database.php';
 $db = connectToDatabase();
-
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
+?>
 
+<?php
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!isset($_SESSION['loggedin'])) {
-        echo "You must be logged in to like or comment.";
+        $_SESSION['message'] = [
+            'content' => 'You must be logged in to like or comment.',
+            'type' => 'warning', // can be 'success', 'danger', 'info', or 'warning'
+        ];
     } else {
         if (isset($_POST['like'])) {
             $post_id = $_POST['post_id'];
@@ -21,16 +23,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($userLiked) {
                 $stmt = $db->prepare("DELETE FROM likes WHERE post_id = :post_id AND user_id = :user_id");
                 $stmt->execute([':post_id' => $post_id , ':user_id' => $_SESSION['user_id']]);
+                $_SESSION['message'] = [
+                    'content' => 'Removed like.',
+                    'type' => 'success', // can be 'success', 'danger', 'info', or 'warning'
+                ];
+                header('Location: home');
             } else {
                 $stmt = $db->prepare("INSERT INTO likes (post_id, user_id) VALUES (:post_id, :user_id)");
                 $stmt->execute([':post_id' => $post_id , ':user_id' => $_SESSION['user_id']]);
+                $_SESSION['message'] = [
+                    'content' => 'Liked post.',
+                    'type' => 'success', // can be 'success', 'danger', 'info', or 'warning'
+                ];
+                header('Location: home');
             }
         }
         if (isset($_POST['comment'])) {
             $post_id = $_POST['post_id'];
             $comment = $_POST['comment'];
-            $stmt = $db->prepare("INSERT INTO comments (post_id, user_id, comment_text) VALUES (:post_id, :user_id, :comment)");
-            $stmt->execute([':post_id' => $post_id , ':user_id' => $_SESSION['user_id'], ':comment' => htmlspecialchars($comment)]);
+            try {
+                $stmt = $db->prepare("INSERT INTO comments (post_id, user_id, comment_text) VALUES (:post_id, :user_id, :comment)");
+                $stmt->execute([':post_id' => $post_id , ':user_id' => $_SESSION['user_id'], ':comment' => htmlspecialchars($comment)]);
+                $_SESSION['message'] = [
+                    'content' => 'Comment added.',
+                    'type' => 'success', // can be 'success', 'danger', 'info', or 'warning'
+                ];
+                header('Location: home');
+            } catch (PDOException $e) {
+                $db->rollBack();
+                $_SESSION['message'] = [
+                    'content' => 'Error adding comment: ' . $e->getMessage(),
+                    'type' => 'danger', // can be 'success', 'danger', 'info', or 'warning'
+                ];
+                header('Location: home');
+            }
         } else if (isset($_POST['delete-comment'])) {
             $comment_id = $_POST['comment_id'];
             $stmt = $db->prepare("SELECT * FROM comments WHERE comment_id = :comment_id AND user_id = :user_id");
@@ -39,6 +65,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($ownComment) {
                 $stmt = $db->prepare("DELETE FROM comments WHERE comment_id = :comment_id");
                 $stmt->execute([':comment_id' => $comment_id]);
+                $_SESSION['message'] = [
+                    'content' => 'Comment deleted.',
+                    'type' => 'success', // can be 'success', 'danger', 'info', or 'warning'
+                ];
+                header('Location: home');
+            } else {
+                $_SESSION['message'] = [
+                    'content' => 'You can only delete your own comments.',
+                    'type' => 'warning', // can be 'success', 'danger', 'info', or 'warning'
+                ];
+                header('Location: home');
             }
         }
     }
@@ -59,13 +96,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $posts = $db->query($query)->fetchAll();
 
-    foreach ($posts as $post) { // Loop starts here
+    foreach ($posts as $post) {
         $post_id = $post['post_id'];
 
         $stmt = $db->prepare("SELECT COUNT(*) FROM likes WHERE post_id = :post_id");
         $stmt->execute([':post_id' => $post_id]);
         $likesCount = $stmt->fetchColumn();
         $userLiked = false;
+
         if (isset($_SESSION['user_id'])) {
             $stmt = $db->prepare("SELECT * FROM likes WHERE post_id = :post_id AND user_id = :user_id");
             $stmt->execute([':post_id' => $post_id, ':user_id' => $_SESSION['user_id']]);

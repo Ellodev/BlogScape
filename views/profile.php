@@ -1,8 +1,5 @@
 <?php
 require "templates/header.php";
-require "templates/database.php";
-
-$db = connectToDatabase();
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();

@@ -14,10 +14,6 @@ if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-
-require('templates/database.php');
-$dbo = connectToDatabase();
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = validateEmail($_POST['email']);
     $password = $_POST['password'];
@@ -30,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($email === false) {
         $error = "Invalid email.";
     } else {
-        $stmt = $dbo->prepare("SELECT * FROM users WHERE email = :email");
+        $stmt = $db->prepare("SELECT * FROM users WHERE email = :email");
         $stmt->execute([':email' => $email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 

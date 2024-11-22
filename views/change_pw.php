@@ -14,9 +14,6 @@ if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-require('templates/database.php');
-$db = connectToDatabase();
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_SESSION['username'];
     $old_password = $_POST['old_password'];

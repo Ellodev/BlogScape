@@ -1,5 +1,5 @@
 <?php require "templates/header.php" ?>
-<?php require "templates/database.php";
+<?php
 require "templates/notification.php";
 
 if (session_status() == PHP_SESSION_NONE) {
@@ -19,7 +19,6 @@ if (!isset($_SESSION['loggedin'])) {
     header('Location: login');
     exit;
 } else {
-    $db = connectToDatabase();
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // CSRF token validation

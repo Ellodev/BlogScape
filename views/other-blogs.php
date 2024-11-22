@@ -1,6 +1,5 @@
 <?php
 require('templates/header.php');
-require('templates/database.php');
 
 $db = connectToSecondDatabase();
 

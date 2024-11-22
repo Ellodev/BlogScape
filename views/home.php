@@ -1,7 +1,7 @@
 <?php require "templates/header.php";
 require "templates/notification.php";
 require_once 'templates/database.php';
-$db = connectToDatabase();
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }

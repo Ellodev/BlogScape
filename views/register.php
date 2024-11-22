@@ -11,7 +11,7 @@ if (!isset($_SESSION['csrf_token'])) {
 
 
 require('templates/database.php');
-$db = connectToDatabase();
+
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $firstname = $_POST['firstname'];
